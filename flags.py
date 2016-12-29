@@ -8,7 +8,7 @@ country = {"Australia":6,"Canada":2,"Russia":1,"India":7,"Argentina":8}
 def change_flag():
     global counter,canvas,my_image
     directory = 'C:\\Users\\abhayksi\\Desktop\\GUI_python\\'
-    country = ['Canada','Australia']
+    country = ['Canada','Australia','India']
     format_image = '.png'
     location = directory + country[counter] + format_image
     my_image = PhotoImage(file = location)
