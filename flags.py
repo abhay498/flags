@@ -43,6 +43,9 @@ class game_wrapper(Tk):
     def show_frame(self,cont):
         frame = self.frames[cont]
         frame.tkraise()
+
+    def exit(self):
+        self.destroy()
         
 class flags_page(Frame):
     def __init__(self,parent,controller):
@@ -70,20 +73,39 @@ class flags_page(Frame):
         button3.pack(side = LEFT,padx = 5,pady = 5)
         button4.pack(side = RIGHT,padx = 5,pady = 5)
         button5.pack(side = RIGHT,padx = 5,pady = 5)
+        score_page_button = Button(self,width = 20, text = "Scores", fg = "black" \
+                             ,command = lambda:controller.show_frame(score_page))
+        score_page_button.pack()
 
 class start_page(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
         label = Label(self,text = "Start page",font = LARGE_FONT)
         label.pack(pady = 10,padx = 10)
-        play_button = Button(self,width = 20, text = "Next", fg = "black" \
+        play_button = Button(self,width = 20, text = "Play", fg = "black" \
                              ,command = lambda:controller.show_frame(flags_page))
         play_button.pack()
 
 class score_page(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
-        pass
+        user_one = 46
+        score_canvas= Canvas(self,width=500, height=700, bg="white")
+        score_canvas.pack()
+        J_one = score_canvas.create_text(200,100, text=("python", user_one), font=("Comic Sans", 20))
+        J_two = score_canvas.create_text(200,200, text=("ruby", user_one), font=("Comic Sans", 20))
+        J_three = score_canvas.create_text(200,300, text=("java", user_one), font=("Comic Sans", 20))
+        J_four = score_canvas.create_text(200,400, text=("sqlite", user_one), font=("Comic Sans", 20))
+        J_five = score_canvas.create_text(200,500, text=("openCV", user_one), font=("Comic Sans", 20))
+        bottom_frame = Frame(self,bg = "white")
+        bottom_frame.pack()
+        bottom_frame.place(relx = 0.2,rely = 0.9)
+        start_button = Button(bottom_frame,width = 20, text = "Start", fg = "black",\
+                              command = lambda:controller.show_frame(start_page))
+        exit_button = Button(bottom_frame,width = 20, text = "Exit", fg = "black",\
+                             command = lambda:app.exit())
+        start_button.pack(side = LEFT,padx = 5,pady = 5)
+        exit_button.pack(side = RIGHT,padx = 30,pady = 5)
 
 app = game_wrapper()
 app.mainloop()
