@@ -2,6 +2,8 @@ from tkinter import *
 
 LARGE_FONT = ("Verdana",12)
 global counter,canvas,country
+global background_image
+global background_label
 counter = 0
 country = {"Australia":6,"Canada":2,"Russia":1,"India":7,"Argentina":8}
 
@@ -27,8 +29,8 @@ class game_wrapper(Tk):
         self.geometry('500x650')
         self.title("flags")
         self.frames = {}
-
-        container = Frame(self,background="white")
+        self.configure(bg="white")
+        container = Frame(self)
         container.pack(side = "top",fill = "both",expand = True)
         container.grid_rowconfigure(0,weight = 1)
         container.grid_columnconfigure(0,weight = 1)
@@ -51,6 +53,7 @@ class flags_page(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
         global canvas
+        self.configure(bg="white")
         canvas = Canvas(self,width = 250,height = 130,bg = 'white')
         canvas.pack()
         canvas.place(relx=0.25, rely= 0.3)
@@ -80,15 +83,22 @@ class flags_page(Frame):
 class start_page(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
-        label = Label(self,text = "Start page",font = LARGE_FONT)
+        global background_image
+        global background_label
+        background_image = PhotoImage(file = 'C:\\Users\\abhayksi\\Desktop\\GUI_python\\background.png')
+        background_label = Label(self, image=background_image)
+        background_label.pack(side='top', fill='both', expand='yes')
+        label = Label(background_label,text = "Start page",font = LARGE_FONT)
         label.pack(pady = 10,padx = 10)
-        play_button = Button(self,width = 20, text = "Play", fg = "black" \
+        play_button = Button(background_label,width = 20, text = "Play", fg = "black" \
                              ,command = lambda:controller.show_frame(flags_page))
         play_button.pack()
+        self.configure(bg="white")
 
 class score_page(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
+        self.configure(bg="white")
         user_one = 46
         score_canvas= Canvas(self,width=500, height=700, bg="white")
         score_canvas.pack()
@@ -108,4 +118,6 @@ class score_page(Frame):
         exit_button.pack(side = RIGHT,padx = 30,pady = 5)
 
 app = game_wrapper()
+app.resizable(0,0)
+background_label.image = background_image
 app.mainloop()
