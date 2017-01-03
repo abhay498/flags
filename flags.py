@@ -4,6 +4,8 @@ LARGE_FONT = ("Verdana",12)
 global counter,canvas,country
 global background_image
 global background_label
+global svalue
+global userscore_canvas
 counter = 0
 country = {"Australia":6,"Canada":2,"Russia":1,"India":7,"Argentina":8}
 
@@ -17,11 +19,15 @@ def change_flag():
     canvas.create_image(5,5,anchor = NW,image = my_image)
     counter += 1
         
-def print_result(number):
+def print_result(number,id_2):
+    global userscore_canvas
     if number == 2:
-        print("Right answer {0}".format(number))
+        userscore_canvas.itemconfigure(id_2, text = "Right")
     else:
-        print("Wrong answer")
+        userscore_canvas.itemconfigure(id_2, text = "Wrong")
+
+def user_name():
+    print ("Hey {0},lets get started".format(svalue.get()))
 
 class game_wrapper(Tk):
     def __init__(self,*args,**kwargs):
@@ -30,10 +36,28 @@ class game_wrapper(Tk):
         self.title("flags")
         self.frames = {}
         self.configure(bg="white")
+        
         container = Frame(self)
         container.pack(side = "top",fill = "both",expand = True)
         container.grid_rowconfigure(0,weight = 1)
         container.grid_columnconfigure(0,weight = 1)
+
+        """
+        menu = Menu(container)
+        container.config(menu = menu)
+
+        subMenu = Menu(menu)
+        menu.add_cascade(label = "file",menu = subMenu)
+        
+        subMenu.add_command(label = "Now project ..")
+        subMenu.add_command(label = " Now..")
+        subMenu.add_separator()
+        subMenu.add_command(label = "Exit")
+        
+        editMenu = Menu(menu)
+        menu.add_cascade(label = "Edit",menu = editMenu)
+        editMenu.add_command(label = "Redo")
+        """
         
         for F in (start_page,flags_page,score_page):
             frame = F(container,self)
@@ -45,14 +69,15 @@ class game_wrapper(Tk):
     def show_frame(self,cont):
         frame = self.frames[cont]
         frame.tkraise()
-
+    
     def exit(self):
         self.destroy()
         
 class flags_page(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
-        global canvas
+        global canvas,score,userscore_canvas
+        score = 870
         self.configure(bg="white")
         canvas = Canvas(self,width = 250,height = 130,bg = 'white')
         canvas.pack()
@@ -65,10 +90,16 @@ class flags_page(Frame):
         bottom_frame = Frame(self,bg = "white")
         bottom_frame.pack()
         bottom_frame.place(relx = 0.2,rely = 0.8)
-        button1 = Button(top_frame,width = 20, text = "Australia", fg = "black",command = lambda: print_result(1))
-        button2 = Button(top_frame,width = 20, text = "Canada", fg = "black",command = lambda: print_result(2))
-        button3 = Button(bottom_frame,width = 20, text = "Belgium", fg = "black",command = lambda: print_result(3))
-        button4 = Button(bottom_frame,width = 20, text = "Russia", fg = "black",command = lambda: print_result(4))
+        
+        userscore_canvas= Canvas(self,width=500, height=100, bg="white")
+        userscore_canvas.pack()
+        id_1 = userscore_canvas.create_text(40,30, text=("Score", score), font=("Comic Sans",10))
+        id_2 = userscore_canvas.create_text(45,45, font=("Comic Sans",10))
+        
+        button1 = Button(top_frame,width = 20, text = "Australia", fg = "black",command = lambda: print_result(1,id_2))
+        button2 = Button(top_frame,width = 20, text = "Canada", fg = "black",command = lambda: print_result(2,id_2))
+        button3 = Button(bottom_frame,width = 20, text = "Belgium", fg = "black",command = lambda: print_result(3,id_2))
+        button4 = Button(bottom_frame,width = 20, text = "Russia", fg = "black",command = lambda: print_result(4,id_2))
         button5 = Button(next_frame,width = 20, text = "next", fg = "black",command = lambda: change_flag())
 
         button1.pack(side = LEFT,padx = 5,pady = 5)
@@ -85,7 +116,9 @@ class start_page(Frame):
         Frame.__init__(self,parent)
         global background_image
         global background_label
-        background_image = PhotoImage(file = 'C:\\Users\\abhayksi\\Desktop\\GUI_python\\background.png')
+        global svalue
+
+        background_image = PhotoImage(file = 'C:\\Users\\abhayksi\\Desktop\\GUI_python\\white.png')
         background_label = Label(self, image=background_image)
         background_label.pack(side='top', fill='both', expand='yes')
         label = Label(background_label,text = "Start page",font = LARGE_FONT)
@@ -94,7 +127,13 @@ class start_page(Frame):
                              ,command = lambda:controller.show_frame(flags_page))
         play_button.pack()
         self.configure(bg="white")
-
+        svalue = StringVar()
+        w = Entry(self,textvariable=svalue)
+        w.pack()
+        
+        foo = Button(self,text="Username", command = lambda: user_name())
+        foo.pack()
+        
 class score_page(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
@@ -112,12 +151,14 @@ class score_page(Frame):
         bottom_frame.place(relx = 0.2,rely = 0.9)
         start_button = Button(bottom_frame,width = 20, text = "Start", fg = "black",\
                               command = lambda:controller.show_frame(start_page))
-        exit_button = Button(bottom_frame,width = 20, text = "Exit", fg = "black",\
+        exit_button = Button(bottom_frame,width = 20, text = "Close", fg = "black",\
                              command = lambda:app.exit())
         start_button.pack(side = LEFT,padx = 5,pady = 5)
         exit_button.pack(side = RIGHT,padx = 30,pady = 5)
 
-app = game_wrapper()
-app.resizable(0,0)
-background_label.image = background_image
-app.mainloop()
+if __name__ == "__main__":
+    app = game_wrapper()
+    app.resizable(0,0)
+    app.iconbitmap('C:\\Users\\abhayksi\\Desktop\\GUI_python\\favicon.ico')
+    background_label.image = background_image
+    app.mainloop()
