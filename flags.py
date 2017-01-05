@@ -29,6 +29,11 @@ def print_result(number,id_2):
 def user_name():
     print ("Hey {0},lets get started".format(svalue.get()))
 
+def about():
+    window = Toplevel()
+    window.title("About flags")
+    window.geometry("400x400")
+    
 class game_wrapper(Tk):
     def __init__(self,*args,**kwargs):
         Tk.__init__(self,*args,**kwargs)
@@ -109,7 +114,7 @@ class flags_page(Frame):
 
         #****** help
         helps = Menu(menubar,tearoff=0)
-        helps.add_command(label="About",)
+        helps.add_command(label="About",command = lambda: about())
         menubar.add_cascade(label="Help",menu = helps)
         
         controller.configure(menu = menubar)
