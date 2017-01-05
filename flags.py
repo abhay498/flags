@@ -37,7 +37,10 @@ def about():
     canvas = Canvas(window,width = 400,height = 400,bg = 'white')
     canvas.pack()
     J_one = canvas.create_text(150,150, text=("File version : 2.1\rEmail : abskumar798@gmail.com"), font=("Comic Sans", 10))
-        
+    exit_button = Button(canvas,width = 20, text = "Close", fg = "black",\
+                             command = lambda:app.exit_window(window))
+    exit_button.place(relx=.78, rely=.93, anchor="c")
+    
 class game_wrapper(Tk):
     def __init__(self,*args,**kwargs):
         Tk.__init__(self,*args,**kwargs)
@@ -65,6 +68,9 @@ class game_wrapper(Tk):
     def exit(self):
         self.destroy()
         
+    def exit_window(self,window):
+        window.destroy()
+
 class flags_page(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
