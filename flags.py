@@ -97,13 +97,14 @@ class flags_page(Frame):
         menubar = Menu(self)
         #****** file 
         filemenu = Menu(menubar,tearoff=0)
+        filemenu.add_command(label="Start",command = lambda:controller.show_frame(start_page))
         filemenu.add_command(label="Play",command = lambda:controller.show_frame(flags_page))
         filemenu.add_command(label="Exit",command = lambda:app.exit())
         menubar.add_cascade(label="File",menu = filemenu)
 
         #****** options
         options = Menu(menubar,tearoff=0)
-        options.add_command(label="Scores",)
+        options.add_command(label="Scores",command = lambda:controller.show_frame(score_page))
         menubar.add_cascade(label="Options",menu = options)
 
         #****** help
