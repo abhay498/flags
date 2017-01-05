@@ -41,23 +41,6 @@ class game_wrapper(Tk):
         container.pack(side = "top",fill = "both",expand = True)
         container.grid_rowconfigure(0,weight = 1)
         container.grid_columnconfigure(0,weight = 1)
-
-        """
-        menu = Menu(container)
-        container.config(menu = menu)
-
-        subMenu = Menu(menu)
-        menu.add_cascade(label = "file",menu = subMenu)
-        
-        subMenu.add_command(label = "Now project ..")
-        subMenu.add_command(label = " Now..")
-        subMenu.add_separator()
-        subMenu.add_command(label = "Exit")
-        
-        editMenu = Menu(menu)
-        menu.add_cascade(label = "Edit",menu = editMenu)
-        editMenu.add_command(label = "Redo")
-        """
         
         for F in (start_page,flags_page,score_page):
             frame = F(container,self)
@@ -110,6 +93,25 @@ class flags_page(Frame):
         score_page_button = Button(self,width = 20, text = "Scores", fg = "black" \
                              ,command = lambda:controller.show_frame(score_page))
         score_page_button.pack()
+
+        menubar = Menu(self)
+        #****** file 
+        filemenu = Menu(menubar,tearoff=0)
+        filemenu.add_command(label="Play",command = lambda:controller.show_frame(flags_page))
+        filemenu.add_command(label="Exit",command = lambda:app.exit())
+        menubar.add_cascade(label="File",menu = filemenu)
+
+        #****** options
+        options = Menu(menubar,tearoff=0)
+        options.add_command(label="Scores",)
+        menubar.add_cascade(label="Options",menu = options)
+
+        #****** help
+        helps = Menu(menubar,tearoff=0)
+        helps.add_command(label="About",)
+        menubar.add_cascade(label="Help",menu = helps)
+        
+        controller.configure(menu = menubar)
 
 class start_page(Frame):
     def __init__(self,parent,controller):
