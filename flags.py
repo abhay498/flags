@@ -1,24 +1,30 @@
 from tkinter import *
-
+import random
 LARGE_FONT = ("Verdana",12)
 global counter,canvas,country
 global background_image
 global background_label
 global svalue
 global userscore_canvas
+global shuffled_country
 counter = 0
-country = {"Australia":6,"Canada":2,"Russia":1,"India":7,"Argentina":8}
+country = ['Canada','Australia','Belarus','Croatia','Estonia','Ethiopia']
+random.shuffle(country)
+print(country)
+
+global chosen
 
 def change_flag():
-    global counter,canvas,my_image
+    global counter,canvas,my_image,chosen
     directory = 'C:\\Users\\abhayksi\\Desktop\\GUI_python\\'
-    country = ['Canada','Australia','India']
     format_image = '.png'
     location = directory + country[counter] + format_image
     my_image = PhotoImage(file = location)
     canvas.create_image(5,5,anchor = NW,image = my_image)
+    chosen = country[counter]
+    print(chosen)
     counter += 1
-        
+    
 def print_result(number,id_2):
     global userscore_canvas
     if number == 2:
@@ -36,7 +42,7 @@ def about():
     window.iconbitmap('C:\\Users\\abhayksi\\Desktop\\GUI_python\\favicon.ico')
     canvas = Canvas(window,width = 400,height = 400,bg = 'white')
     canvas.pack()
-    J_one = canvas.create_text(150,150, text=("File version : 2.1\rEmail : abskumar798@gmail.com"), font=("Comic Sans", 10))
+    J_one = canvas.create_text(150,150, text=("File version : 1.0\rEmail : abskumar798@gmail.com"), font=("Comic Sans", 10))
     exit_button = Button(canvas,width = 20, text = "Close", fg = "black",\
                              command = lambda:app.exit_window(window))
     exit_button.place(relx=.78, rely=.93, anchor="c")
@@ -74,7 +80,7 @@ class game_wrapper(Tk):
 class flags_page(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
-        global canvas,score,userscore_canvas
+        global canvas,score,userscore_canvas,counter,country,shuffled_country
         score = 870
         self.configure(bg="white")
         canvas = Canvas(self,width = 250,height = 130,bg = 'white')
@@ -93,13 +99,13 @@ class flags_page(Frame):
         userscore_canvas.pack()
         id_1 = userscore_canvas.create_text(40,30, text=("Score", score), font=("Comic Sans",10))
         id_2 = userscore_canvas.create_text(45,45, font=("Comic Sans",10))
-        
+
         button1 = Button(top_frame,width = 20, text = "Australia", fg = "black",command = lambda: print_result(1,id_2))
         button2 = Button(top_frame,width = 20, text = "Canada", fg = "black",command = lambda: print_result(2,id_2))
         button3 = Button(bottom_frame,width = 20, text = "Belgium", fg = "black",command = lambda: print_result(3,id_2))
         button4 = Button(bottom_frame,width = 20, text = "Russia", fg = "black",command = lambda: print_result(4,id_2))
         button5 = Button(next_frame,width = 20, text = "next", fg = "black",command = lambda: change_flag())
-
+        
         button1.pack(side = LEFT,padx = 5,pady = 5)
         button2.pack(side = RIGHT,padx = 5,pady = 5)
         button3.pack(side = LEFT,padx = 5,pady = 5)
