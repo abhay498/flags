@@ -7,27 +7,63 @@ global background_label
 global svalue
 global userscore_canvas
 global shuffled_country
+import copy
+from random import shuffle
 counter = 0
 country = ['Canada','Australia','Belarus','Croatia','Estonia','Ethiopia']
 random.shuffle(country)
-print(country)
-
+#print(country)
+import pdb
 global chosen
+global button1,button2,button3,button4
+global top_frame,bottom_frame
+global flag
 
-def change_flag():
-    global counter,canvas,my_image,chosen
+def func_options(chosen):
+    country_1 = ['Canada','Australia','Belarus','Croatia','Estonia','Ethiopia']
+    country_2 = copy.copy(country_1)
+    country_2.remove(chosen)
+    options = []
+    options.append(chosen)
+    shuffle(country_2)
+    total = 0
+    while total < 3:
+        item = country_2.pop()
+        options.append(item)
+        total += 1
+
+    shuffle(options)
+    del country_2[:]
+    return(options)
+    
+def change_flag(top_frame,bottom_frame,button1,button2,button3,button4):
+    global counter,canvas,my_image,chosen,flag
     directory = 'C:\\Users\\abhayksi\\Desktop\\GUI_python\\'
     format_image = '.png'
     location = directory + country[counter] + format_image
     my_image = PhotoImage(file = location)
     canvas.create_image(5,5,anchor = NW,image = my_image)
     chosen = country[counter]
-    print(chosen)
+    options_text = func_options(chosen)
+
+    for i in range(0,4):
+        if chosen == options_text[i]:
+            flag = i
+            #print(flag + 1)
+            break
+    flag = flag + 1
+    button1["text"] = options_text[0]
+    button2["text"] = options_text[1]
+    button3["text"] = options_text[2]
+    button4["text"] = options_text[3]
+    
     counter += 1
     
 def print_result(number,id_2):
-    global userscore_canvas
-    if number == 2:
+    global userscore_canvas,chosen,flag
+    print(flag)
+    print(number)
+    if flag == number:
         userscore_canvas.itemconfigure(id_2, text = "Right")
     else:
         userscore_canvas.itemconfigure(id_2, text = "Wrong")
@@ -100,22 +136,29 @@ class flags_page(Frame):
         id_1 = userscore_canvas.create_text(40,30, text=("Score", score), font=("Comic Sans",10))
         id_2 = userscore_canvas.create_text(45,45, font=("Comic Sans",10))
 
-        button1 = Button(top_frame,width = 20, text = "Australia", fg = "black",command = lambda: print_result(1,id_2))
-        button2 = Button(top_frame,width = 20, text = "Canada", fg = "black",command = lambda: print_result(2,id_2))
-        button3 = Button(bottom_frame,width = 20, text = "Belgium", fg = "black",command = lambda: print_result(3,id_2))
-        button4 = Button(bottom_frame,width = 20, text = "Russia", fg = "black",command = lambda: print_result(4,id_2))
-        button5 = Button(next_frame,width = 20, text = "next", fg = "black",command = lambda: change_flag())
-        
+        #options_text = ['Aus','Canada','Belgium','Russia']
+        #options_text = func_options()
+        #print(options_text)
+        #pdb.set_trace()
+        button1 = Button(top_frame,width = 20, text = "a", fg = "black",command = lambda: print_result(1,id_2))
+        button2 = Button(top_frame,width = 20, text = "b", fg = "black",command = lambda: print_result(2,id_2))
+        button3 = Button(bottom_frame,width = 20, text = "c", fg = "black",command = lambda: print_result(3,id_2))
+        button4 = Button(bottom_frame,width = 20, text = "d", fg = "black",command = lambda: print_result(4,id_2))
         button1.pack(side = LEFT,padx = 5,pady = 5)
         button2.pack(side = RIGHT,padx = 5,pady = 5)
         button3.pack(side = LEFT,padx = 5,pady = 5)
         button4.pack(side = RIGHT,padx = 5,pady = 5)
+
+        button5 = Button(next_frame,width = 20, text = "next", fg = "black",command = lambda: change_flag(top_frame,bottom_frame, \
+                        button1,button2,button3,button4))
+        
         button5.pack(side = RIGHT,padx = 5,pady = 5)
         score_page_button = Button(self,width = 20, text = "Scores", fg = "black" \
                              ,command = lambda:controller.show_frame(score_page))
         score_page_button.pack()
 
         menubar = Menu(self)
+        
         #****** file 
         filemenu = Menu(menubar,tearoff=0)
         filemenu.add_command(label="Start",command = lambda:controller.show_frame(start_page))
