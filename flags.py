@@ -42,13 +42,17 @@ def func_options(chosen):
     return options
 
 
-def change_flag(top_frame, bottom_frame, button1, button2, button3, button4):
+def change_flag(top_frame, bottom_frame, button1, button2, button3, button4, controller):
     global counter, canvas, my_image, chosen, flag, directory
     canvas.delete('all')
     directory = 'national_flags\\'
     format_image = '.png'
-    print(counter)
-    location = directory + country[counter] + format_image
+    
+    try:
+        location = directory + country[counter] + format_image
+    except:
+        controller.show_frame(PlayAgainExit)
+        
     my_image = PhotoImage(file=location)
     canvas.create_image(5, 5, anchor=NW, image=my_image)
     chosen = country[counter]
@@ -58,6 +62,7 @@ def change_flag(top_frame, bottom_frame, button1, button2, button3, button4):
         if chosen == options_text[i]:
             flag = i
             break
+        
     flag = flag + 1
     button1["text"] = options_text[0]
     button2["text"] = options_text[1]
@@ -81,7 +86,7 @@ def print_result(number, id_2, id_1, controller):
         userscore_canvas.itemconfigure(id_1, text=("Score", score))
     else:
         userscore_canvas.itemconfigure(id_2, text="Wrong")
-        controller.show_frame(score_page)
+        controller.show_frame(PlayAgainExit)
 
 
 def about():
@@ -131,7 +136,7 @@ class game_wrapper(Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        for F in (start_page, flags_page, score_page):
+        for F in (start_page, flags_page, PlayAgainExit):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -237,7 +242,8 @@ class flags_page(Frame):
                 button1,
                 button2,
                 button3,
-                button4))
+                button4,
+                controller))
 
         button5.pack(side=RIGHT, padx=5, pady=5)
 
@@ -292,17 +298,28 @@ class start_page(Frame):
         w.pack()
 
 
-class score_page(Frame):
+class PlayAgainExit(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
         self.configure(bg="white")
+        global counter
         score_canvas = Canvas(self, width=500, height=700, bg="white")
-        score_canvas.create_text(
-            300,
-            50,
-            text="Wrong answer",
-            fill="black",
-            font=('Helvetica 15 bold'))
+
+        if counter == 3:
+            score_canvas.create_text(
+                300,
+                50,
+                text="Wrong answer",
+                fill="black",
+                font=('Helvetica 15 bold'))
+        else:
+            score_canvas.create_text(
+                300,
+                50,
+                text="Congratulations, you have \r identified all flags correctly.",
+                fill="black",
+                font=('Helvetica 15 bold'))
+            
         score_canvas.pack()
         bottom_frame = Frame(self, bg="white")
         bottom_frame.pack()
@@ -317,7 +334,6 @@ class score_page(Frame):
                              command=lambda: app.exit())
         start_button.pack(side=LEFT, padx=5, pady=5)
         exit_button.pack(side=RIGHT, padx=30, pady=5)
-
 
 if __name__ == "__main__":
     app = game_wrapper()
