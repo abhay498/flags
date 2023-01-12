@@ -19,7 +19,10 @@ from random import shuffle
 import copy
 import sys
 import os
-from tkinter import font, Tk, Frame, Button, BOTTOM, Label, LEFT, RIGHT, StringVar, Entry, Canvas, PhotoImage, CENTER, X, Menu, NORMAL, DISABLED, Toplevel
+from tkinter import font, Tk, Frame, Button, BOTTOM, Label, LEFT, RIGHT
+from tkinter import Entry, Canvas, PhotoImage, CENTER, X, Menu, NORMAL
+from tkinter import DISABLED, Toplevel, StringVar
+
 LARGE_FONT = ('Verdana', 12)
 global canvas
 global background_image
@@ -108,8 +111,8 @@ def get_right_answer_flag(chosen, options_text):
 
     Args:
         chosen: An open smalltable.Table instance.
-        options_text: A list of four countries name wherein one is the name of the country to which the
-                      displayed flag belongs.
+        options_text: A list of four countries name wherein one is the name of
+                      the country to which the displayed flag belongs.
 
     Returns:
         A string referencing the name of the correct country of the flag.
@@ -138,7 +141,9 @@ def get_difficulty_level():
     difficulty_level = "easy_guess_country"
     if counter < len(easy_guess_country):
         difficulty_level = "easy_guess_country"
-    elif counter > len(easy_guess_country) - 1 and counter < len(easy_guess_country) + len(medium_guess_country):
+    elif counter > len(easy_guess_country) - 1 and \
+            counter < len(easy_guess_country) + len(medium_guess_country):
+
         difficulty_level = "medium_guess_country"
     else:
         difficulty_level = "hard_guess_country"
@@ -149,14 +154,15 @@ def get_difficulty_level():
 def function_options():
     """Gives the list of options along with the correct country name
 
-    Gives the list of options which are countries name and also the correct name of the country
-    to which the flag belongs
+    Gives the list of options which are countries name and also the correct
+    name of the country to which the flag belongs
 
     Args:
         None
 
     Returns:
-        A list of options of four countries and the correct country name to which the flag belongs to
+        A list of options of four countries and the correct country name
+        to which the flag belongs to
     """
     difficulty_level = get_difficulty_level()
     if difficulty_level == "easy_guess_country":
@@ -279,8 +285,8 @@ def print_result(number, id_2, id_1, controller):
 def about():
     """Opens a window which gives respective information about the version.
 
-    Opens About window of the game when top level option about is clicked.Gives information about file version
-    and mail id of the author.
+    Opens About window of the game when top level option about is clicked.
+    Gives information about file version and mail id of the author.
 
     Args:
         None
