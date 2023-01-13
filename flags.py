@@ -13,27 +13,31 @@ Typical usage example:
   app.mainloop()
 """
 
-from threading import Thread
+##########################################################################
+#           import statement section
+##########################################################################
+
 import pdb
-from random import shuffle
-import copy
-import sys
+
 import os
+import sys
+import copy
+from random import shuffle
+from threading import Thread
 from tkinter import font, Tk, Frame, Button, BOTTOM, Label, LEFT, RIGHT
 from tkinter import Entry, Canvas, PhotoImage, CENTER, X, Menu, NORMAL
 from tkinter import DISABLED, Toplevel, StringVar
 
-LARGE_FONT = ('Verdana', 12)
-global canvas
-global background_image
-global background_label
-global svalue
-global userscore_canvas
-global shuffled_country
-global counter
-global right_answer_flag
-global number_of_countries
+##########################################################################
+
+canvas = None
+background_image = None
+background_label = None
+svalue = None
+userscore_canvas = None
+right_answer_flag = None
 counter = 0
+score = None
 
 easy_guess_country = [
     "Brazil",
@@ -94,14 +98,11 @@ hard_guess_country = [
 number_of_countries = len(easy_guess_country) + \
     len(medium_guess_country) + len(hard_guess_country)
 
-global chosen
-global button1, button2, button3, button4, button5
-global top_frame, bottom_frame
-global difficulty_level
-global directory
-global format_image
-directory = 'national_flags\\'
-format_image = '.png'
+button_one = button_two = button_three = button_four = button_five = None
+top_frame = bottom_frame = None
+difficulty_level = None
+DIRECTORY = 'national_flags\\'
+FORMAT_IMAGE = '.png'
 
 
 def get_right_answer_flag(chosen, options_text):
@@ -134,15 +135,15 @@ def get_difficulty_level():
         None
 
     Returns:
-        A string which tells how easy or difficult is to guess the name of the country
-        of the displayed flag.
+        A string which tells how easy or difficult is to guess the name of the
+        country of the displayed flag.
 
     """
     difficulty_level = "easy_guess_country"
     if counter < len(easy_guess_country):
         difficulty_level = "easy_guess_country"
-    elif counter > len(easy_guess_country) - 1 and \
-            counter < len(easy_guess_country) + len(medium_guess_country):
+    elif len(easy_guess_country) - 1 < counter < len(easy_guess_country) + \
+            len(medium_guess_country):
 
         difficulty_level = "medium_guess_country"
     else:
@@ -155,14 +156,14 @@ def function_options():
     """Gives the list of options along with the correct country name
 
     Gives the list of options which are countries name and also the correct
-    name of the country to which the flag belongs
+    name of the country to which the flag belongs.
 
     Args:
         None
 
     Returns:
         A list of options of four countries and the correct country name
-        to which the flag belongs to
+        to which the flag belongs to.
     """
     difficulty_level = get_difficulty_level()
     if difficulty_level == "easy_guess_country":
@@ -189,38 +190,39 @@ def function_options():
         i += 1
     shuffle(options_text)
     del copy_active_country_list[:]
-    return chosen, options_text
+    return (chosen, options_text)
 
 
-def change_flag(button1, button2, button3, button4, controller):
+def change_flag(button_one, button_two, button_three, button_four, controller):
     """Changes the picture of the flag in the frame
 
     Changes the picture of the flag in the frame along with the
     options.
 
     Args:
-        button1:
-        button2:
-        button3:
-        button4:
-        controller:
+        button_one: Represents the first option
+        button_two: Represents the second option
+        button_three: Represents the third option
+        button_four: Represents the fourth option
+        controller: GameWrapper object used here to bring PlayAgainExit Page to the top
+                    when all answers are correct.
 
     Returns:
         None
     """
-    global counter, canvas, my_image, chosen, flag, directory
+    global counter, canvas, my_image
     canvas.delete("all")
-    # button5['state'] = DISABLED
+    # button_five['state'] = DISABLED
     counter += 1
 
     if counter == number_of_countries:
         controller.show_frame(PlayAgainExit)
-        return None
+        return
 
     chosen, options_text = function_options()
     right_answer_flag = get_right_answer_flag(chosen, options_text)
 
-    location = directory + chosen + format_image
+    location = DIRECTORY + chosen + FORMAT_IMAGE
 
     my_image = PhotoImage(file=location)
     # canvas.create_image(160, 100, anchor=CENTER, image=my_image)
@@ -230,15 +232,15 @@ def change_flag(button1, button2, button3, button4, controller):
             'anchor': CENTER, 'image': my_image})
     thread_canvas_create.start()
 
-    button1["text"] = options_text[0]
-    button2["text"] = options_text[1]
-    button3["text"] = options_text[2]
-    button4["text"] = options_text[3]
+    button_one["text"] = options_text[0]
+    button_two["text"] = options_text[1]
+    button_three["text"] = options_text[2]
+    button_four["text"] = options_text[3]
 
-    button1["state"] = NORMAL
-    button2["state"] = NORMAL
-    button3["state"] = NORMAL
-    button4["state"] = NORMAL
+    button_one["state"] = NORMAL
+    button_two["state"] = NORMAL
+    button_three["state"] = NORMAL
+    button_four["state"] = NORMAL
 
 
 def print_result(number, id_2, id_1, controller):
@@ -248,23 +250,25 @@ def print_result(number, id_2, id_1, controller):
     according the level of difficulty.Disables the options.
 
     Args:
-        number: An open smalltable.Table instance.
-        id_2:
-        id_1:
-        controller:
+        number: Represents which button is clicked.
+        id_2: Creates Right / Wrong text as per the answer inside the frame using Canvas class.
+        id_1: Creates text Score and the current score value in text inside the frame using
+              Canvas class.
+        controller: GameWrapper object used here to bring PlayAgainExit Page to the top
+                    if any answer is wrong.
 
     Returns:
         None
     """
-    global userscore_canvas, chosen, right_answer_flag, score, difficulty_level
-    global button1, button2, button3, button4
+    global userscore_canvas, score, difficulty_level
+    global button_one, button_two, button_three, button_four
 
-    # button5['state'] = NORMAL
+    # button_five['state'] = NORMAL
 
-    button1["state"] = DISABLED
-    button2["state"] = DISABLED
-    button3["state"] = DISABLED
-    button4["state"] = DISABLED
+    button_one["state"] = DISABLED
+    button_two["state"] = DISABLED
+    button_three["state"] = DISABLED
+    button_four["state"] = DISABLED
 
     if right_answer_flag == number:
         userscore_canvas.itemconfigure(id_2, text="Right")
@@ -301,7 +305,7 @@ def about():
     window.resizable(0, 0)
     canvas = Canvas(window, width=400, height=400, bg='white')
     canvas.pack()
-    J_one = canvas.create_text(
+    canvas.create_text(
         150,
         150,
         text=("File version : 1.0\r\rEmail : hello@gmail.com"),
@@ -311,82 +315,103 @@ def about():
 
 
 class GameWrapper(Tk):
-    """Summary of class here.
+    """Inherits Tk class
 
-    Longer class information...
-    Longer class information...
+    Sets the geometry, title, number of frames, background colour
+    of the application.Instantiates the Frame class.
 
     Attributes:
-        likes_spam: A boolean indicating if we like SPAM or not.
-        eggs: An integer count of the eggs we have laid.
+        geometry: Sets the dimensions of the GUI.
+        title: Sets the title of the application which is flags.
+        frames: Dictionary of frames
+        configure: Configures the background of the Frame with white color.
     """
 
     def __init__(self, *args, **kwargs):
-        """Inits SampleClass with blah."""
+        """Inits GameWrapper Class"""
         Tk.__init__(self, *args, **kwargs)
         self.geometry('500x550')
         self.title("flags")
         self.frames = {}
         self.configure(bg="white")
-        self.name = ''
 
         container = Frame(self)
         container.pack(side='top', fill='both', expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
+        # Populating the tuple with all the possible pages to the game.
         for F in (StartPage, FlagsPage, PlayAgainExit):
+            # pdb.set_trace()
             frame = F(container, self)
             self.frames[F] = frame
+            # "nsew" corresponds to directions (north, south, east, west).
             frame.grid(row=0, column=0, sticky="nsew")
+
+        # (Pdb) F
+        # <class '__main__.StartPage'>
+        ##
+        # (Pdb) container
+        # <tkinter.Frame object .!frame>
+        ##
+        # (Pdb) self
+        # <__main__.GameWrapper object .>
+        ##
+        # (Pdb) frame
+        # <__main__.StartPage object .!frame.!startpage>
+        ##
+        # (Pdb) self.frames
+        # {<class '__main__.StartPage'>: <__main__.StartPage object .!frame.!startpage>}
+        # (Pdb) StartPage
+        # <class '__main__.StartPage'>
+        # (Pdb)
 
         self.show_frame(StartPage)
 
-    def show_frame(self, cont):
-        """Shows the frame
+    def show_frame(self, controller_key):
+        """Brings the frame to the top for the user to see.
 
-        Shows the frame.
+        Brings the frame to the top for the user to see using tkraise().
 
         Args:
-            cont:
+            controller_key: Key to the value in dictionary self.frames.
+                            Key represents the class corresponding to a Page.
+                            Value here is an object.Value represents the frame
+                            to be brought to the top for user to see.
 
         Returns:
             None
         """
-        frame = self.frames[cont]
+        frame = self.frames[controller_key]
         frame.tkraise()
 
     def exit(self):
         """Destroys the window of the game."""
         self.destroy()
 
-    def exit_window(self, window):
-        """Destroys the window passed as the parameter."""
-        window.destroy()
-
 
 class FlagsPage(Frame):
     """Frame where the flag and respective options are displayed
 
     Frame where the flag and respective four options are displayed.
-    Buttons options are instantiated.File menu and help menu are created.
+    Button objects are created.File menu and help menu are created.
 
     Attributes:
-        parent:
-        controller:
+        parent: Frame object
+        controller: GameWrapper object
     """
 
     def __init__(self, parent, controller):
-        """Inits SampleClass with blah."""
+        """Inits FlagsPage"""
         Frame.__init__(self, parent)
-        global canvas, score, userscore_canvas, counter, country, shuffled_country
-        global button1, button2, button3, button4, right_answer_flag, button5
+        global canvas, score, userscore_canvas, counter
+        global button_one, button_two, button_three, button_four, right_answer_flag, button_five
         score = 0
         canvas = Canvas(self, width=400, height=400)
         canvas.pack()
         canvas.place(relx=0.20, rely=0.3)
 
-        location = directory + easy_guess_country[0] + format_image
+        location = DIRECTORY + easy_guess_country[0] + FORMAT_IMAGE
 
         filename = PhotoImage(file=location)
         Frame.filename = filename
@@ -413,7 +438,7 @@ class FlagsPage(Frame):
         chosen, options_text = function_options()
         right_answer_flag = get_right_answer_flag(chosen, options_text)
 
-        button1 = Button(
+        button_one = Button(
             top_frame,
             width=20,
             text=options_text[0],
@@ -425,7 +450,7 @@ class FlagsPage(Frame):
                     id_2,
                     id_1,
                     controller)).start())
-        button2 = Button(
+        button_two = Button(
             top_frame,
             width=20,
             text=options_text[1],
@@ -437,7 +462,7 @@ class FlagsPage(Frame):
                     id_2,
                     id_1,
                     controller)).start())
-        button3 = Button(
+        button_three = Button(
             bottom_frame,
             width=20,
             text=options_text[2],
@@ -449,7 +474,7 @@ class FlagsPage(Frame):
                     id_2,
                     id_1,
                     controller)).start())
-        button4 = Button(
+        button_four = Button(
             bottom_frame,
             width=20,
             text=options_text[3],
@@ -461,12 +486,12 @@ class FlagsPage(Frame):
                     id_2,
                     id_1,
                     controller)).start())
-        button1.pack(side=LEFT, padx=5, pady=5)
-        button2.pack(side=RIGHT, padx=5, pady=5)
-        button3.pack(side=LEFT, padx=5, pady=5)
-        button4.pack(side=RIGHT, padx=5, pady=5)
+        button_one.pack(side=LEFT, padx=5, pady=5)
+        button_two.pack(side=RIGHT, padx=5, pady=5)
+        button_three.pack(side=LEFT, padx=5, pady=5)
+        button_four.pack(side=RIGHT, padx=5, pady=5)
 
-        button5 = Button(
+        button_five = Button(
             next_frame,
             width=20,
             text="next",
@@ -474,13 +499,13 @@ class FlagsPage(Frame):
             command=lambda: Thread(
                 target=change_flag,
                 args=(
-                    button1,
-                    button2,
-                    button3,
-                    button4,
+                    button_one,
+                    button_two,
+                    button_three,
+                    button_four,
                     controller)).start())
 
-        button5.pack(side=RIGHT, padx=5, pady=5)
+        button_five.pack(side=RIGHT, padx=5, pady=5)
 
         menubar = Menu(self)
 
@@ -505,8 +530,8 @@ class StartPage(Frame):
     and click on play buttong to start the game.
 
     Attributes:
-        parent:
-        controller:
+        parent: Frame object
+        controller: GameWrapper object
     """
 
     def __init__(self, parent, controller):
@@ -545,15 +570,14 @@ class PlayAgainExit(Frame):
     and exit button which when clicked destroys the window and ends the game.
 
     Attributes:
-        parent:
-        controller:
+        parent: Frame object
+        controller: GameWrapper object
     """
 
     def __init__(self, parent, controller):
-        """Inits PlayAgainExit with parent and controller."""
+        """Inits PlayAgainExit with parent."""
         Frame.__init__(self, parent)
         self.configure(bg="white")
-        global counter, app, number_of_countries
         score_canvas = Canvas(self, width=500, height=700, bg="white")
 
         score_canvas.create_text(
@@ -582,9 +606,9 @@ class PlayAgainExit(Frame):
 def restart_program():
     """Restarts the current program.
 
-    Restarts the prgram when Play again is clicked.
-    Note: this function does not return. Any cleanup action (like
-    saving data) must be done before calling this function.
+    Restarts the program when Play again is clicked.
+    Note: this function does not return. Any clean up action
+    (like saving data) must be done before calling this function.
 
     Args:
         None
