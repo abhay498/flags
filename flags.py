@@ -17,8 +17,6 @@ Typical usage example:
 #           import statement section
 ##########################################################################
 
-import pdb
-
 import os
 import sys
 import copy
@@ -31,15 +29,13 @@ from tkinter import DISABLED, Toplevel, StringVar
 ##########################################################################
 
 canvas = None
-background_image = None
-background_label = None
-svalue = None
 userscore_canvas = None
-right_answer_flag = None
 counter = 0
 score = None
+flag = None
+right_answer_flag = None
 
-easy_guess_country = [
+EASY_GUESS_COUNTRY = (
     "Brazil",
     "India",
     "Belgium",
@@ -64,9 +60,9 @@ easy_guess_country = [
     "Austria",
     "Russia",
     "Pakistan",
-    "Canada"]
+    "Canada")
 
-medium_guess_country = [
+MEDIUM_GUESS_COUNTRY = (
     "Colombia",
     "Senegal",
     "Wales",
@@ -81,9 +77,9 @@ medium_guess_country = [
     "Costa_Rica",
     "Hungary",
     "Poland",
-    "Egypt"]
+    "Egypt")
 
-hard_guess_country = [
+HARD_GUESS_COUNTRY = (
     "Cambodia",
     "Fiji",
     "Laos",
@@ -93,14 +89,12 @@ hard_guess_country = [
     "Moldova",
     "Somalia",
     "Tonga",
-    "Tunisia"]
+    "Tunisia")
 
-number_of_countries = len(easy_guess_country) + \
-    len(medium_guess_country) + len(hard_guess_country)
+NUMBER_OF_COUNTRIES = len(EASY_GUESS_COUNTRY) + \
+    len(MEDIUM_GUESS_COUNTRY) + len(HARD_GUESS_COUNTRY)
 
 button_one = button_two = button_three = button_four = button_five = None
-top_frame = bottom_frame = None
-difficulty_level = None
 DIRECTORY = 'national_flags\\'
 FORMAT_IMAGE = '.png'
 
@@ -111,7 +105,7 @@ def get_right_answer_flag(chosen, options_text):
     Retrieves country's name of the displayed flag from a list of options.
 
     Args:
-        chosen: An open smalltable.Table instance.
+        chosen: Name of the country of which the flag is to be shown.
         options_text: A list of four countries name wherein one is the name of
                       the country to which the displayed flag belongs.
 
@@ -121,9 +115,8 @@ def get_right_answer_flag(chosen, options_text):
     global right_answer_flag
     for i in range(0, 4):
         if chosen == options_text[i]:
-            right_answer_flag = i + 1
             break
-    return right_answer_flag
+    right_answer_flag = i + 1
 
 
 def get_difficulty_level():
@@ -139,11 +132,11 @@ def get_difficulty_level():
         country of the displayed flag.
 
     """
-    difficulty_level = "easy_guess_country"
-    if counter < len(easy_guess_country):
+
+    if counter < len(EASY_GUESS_COUNTRY):
         difficulty_level = "easy_guess_country"
-    elif len(easy_guess_country) - 1 < counter < len(easy_guess_country) + \
-            len(medium_guess_country):
+    elif len(EASY_GUESS_COUNTRY) - 1 < counter < len(EASY_GUESS_COUNTRY) + \
+            len(MEDIUM_GUESS_COUNTRY):
 
         difficulty_level = "medium_guess_country"
     else:
@@ -167,19 +160,19 @@ def function_options():
     """
     difficulty_level = get_difficulty_level()
     if difficulty_level == "easy_guess_country":
-        active_country_list = easy_guess_country
+        active_country_tuple = EASY_GUESS_COUNTRY
         idx = counter
     elif difficulty_level == "medium_guess_country":
-        active_country_list = medium_guess_country
-        idx = counter - len(easy_guess_country)
+        active_country_tuple = MEDIUM_GUESS_COUNTRY
+        idx = counter - len(EASY_GUESS_COUNTRY)
     else:
-        active_country_list = hard_guess_country
-        idx = counter - len(easy_guess_country) - len(medium_guess_country)
+        active_country_tuple = HARD_GUESS_COUNTRY
+        idx = counter - len(EASY_GUESS_COUNTRY) - len(MEDIUM_GUESS_COUNTRY)
 
-    chosen = active_country_list[idx]
+    chosen = active_country_tuple[idx]
     options_text = []
     options_text.append(chosen)
-    copy_active_country_list = copy.copy(active_country_list)
+    copy_active_country_list = list(copy.copy(active_country_tuple))
 
     shuffle(copy_active_country_list)
     i = 0
@@ -210,26 +203,24 @@ def change_flag(button_one, button_two, button_three, button_four, controller):
     Returns:
         None
     """
-    global counter, canvas, my_image
+    global counter, canvas, flag
     canvas.delete("all")
-    # button_five['state'] = DISABLED
     counter += 1
 
-    if counter == number_of_countries:
+    if counter == NUMBER_OF_COUNTRIES:
         controller.show_frame(PlayAgainExit)
         return
 
     chosen, options_text = function_options()
-    right_answer_flag = get_right_answer_flag(chosen, options_text)
+    get_right_answer_flag(chosen, options_text)
 
     location = DIRECTORY + chosen + FORMAT_IMAGE
 
-    my_image = PhotoImage(file=location)
-    # canvas.create_image(160, 100, anchor=CENTER, image=my_image)
+    flag = PhotoImage(file=location)
     thread_canvas_create = Thread(
         target=canvas.create_image, args=(
             160, 100), kwargs={
-            'anchor': CENTER, 'image': my_image})
+            'anchor': CENTER, 'image': flag})
     thread_canvas_create.start()
 
     button_one["text"] = options_text[0]
@@ -243,7 +234,7 @@ def change_flag(button_one, button_two, button_three, button_four, controller):
     button_four["state"] = NORMAL
 
 
-def print_result(number, id_2, id_1, controller):
+def print_result(number, right_wrong_text, score_text, controller):
     """Prints whether the answer is right or wrong and if right increments the score.
 
     Prints whether the answer is right or wrong and if the answer is right increments the score
@@ -251,19 +242,18 @@ def print_result(number, id_2, id_1, controller):
 
     Args:
         number: Represents which button is clicked.
-        id_2: Creates Right / Wrong text as per the answer inside the frame using Canvas class.
-        id_1: Creates text Score and the current score value in text inside the frame using
+        right_wrong_text: Creates Right / Wrong text as per the answer inside the frame
+                          using Canvas class.
+        score_text: Creates text Score and the current score value in text inside the frame using
               Canvas class.
-        controller: GameWrapper object used here to bring PlayAgainExit Page to the top
+        controller: GameWrapper object to bring PlayAgainExit Page to the top
                     if any answer is wrong.
 
     Returns:
         None
     """
-    global userscore_canvas, score, difficulty_level
+    global userscore_canvas, score
     global button_one, button_two, button_three, button_four
-
-    # button_five['state'] = NORMAL
 
     button_one["state"] = DISABLED
     button_two["state"] = DISABLED
@@ -271,7 +261,7 @@ def print_result(number, id_2, id_1, controller):
     button_four["state"] = DISABLED
 
     if right_answer_flag == number:
-        userscore_canvas.itemconfigure(id_2, text="Right")
+        userscore_canvas.itemconfigure(right_wrong_text, text="Right")
         difficulty_level = get_difficulty_level()
         if difficulty_level == "easy_guess_country":
             score = score + 10
@@ -280,16 +270,16 @@ def print_result(number, id_2, id_1, controller):
         else:
             score = score + 25
 
-        userscore_canvas.itemconfigure(id_1, text=("Score", score))
+        userscore_canvas.itemconfigure(score_text, text=("Score", score))
     else:
-        userscore_canvas.itemconfigure(id_2, text="Wrong")
+        userscore_canvas.itemconfigure(right_wrong_text, text="Wrong")
         controller.show_frame(PlayAgainExit)
 
 
 def about():
-    """Opens a window which gives respective information about the version.
+    """Opens a window which gives respective information about the version of the game.
 
-    Opens About window of the game when top level option about is clicked.
+    Opens About window of the game when top level option About is clicked.
     Gives information about file version and mail id of the author.
 
     Args:
@@ -323,7 +313,7 @@ class GameWrapper(Tk):
     Attributes:
         geometry: Sets the dimensions of the GUI.
         title: Sets the title of the application which is flags.
-        frames: Dictionary of frames
+        frames: Dictionary of classes and objects
         configure: Configures the background of the Frame with white color.
     """
 
@@ -342,7 +332,6 @@ class GameWrapper(Tk):
 
         # Populating the tuple with all the possible pages to the game.
         for F in (StartPage, FlagsPage, PlayAgainExit):
-            # pdb.set_trace()
             frame = F(container, self)
             self.frames[F] = frame
             # "nsew" corresponds to directions (north, south, east, west).
@@ -397,25 +386,25 @@ class FlagsPage(Frame):
     Button objects are created.File menu and help menu are created.
 
     Attributes:
-        parent: Frame object
+        parent: Frame object to organize the layout
         controller: GameWrapper object
     """
 
     def __init__(self, parent, controller):
-        """Inits FlagsPage"""
+        """Inits FlagsPage Class"""
         Frame.__init__(self, parent)
-        global canvas, score, userscore_canvas, counter
-        global button_one, button_two, button_three, button_four, right_answer_flag, button_five
+        global canvas, score, userscore_canvas
+        global button_one, button_two, button_three, button_four, button_five
         score = 0
         canvas = Canvas(self, width=400, height=400)
         canvas.pack()
         canvas.place(relx=0.20, rely=0.3)
 
-        location = DIRECTORY + easy_guess_country[0] + FORMAT_IMAGE
+        location = DIRECTORY + EASY_GUESS_COUNTRY[0] + FORMAT_IMAGE
 
-        filename = PhotoImage(file=location)
-        Frame.filename = filename
-        canvas.create_image(160, 100, anchor=CENTER, image=filename)
+        file_name = PhotoImage(file=location)
+        Frame.file_name = file_name
+        canvas.create_image(160, 100, anchor=CENTER, image=file_name)
 
         next_frame = Frame(self, bg="blue")
         next_frame.pack(side="top", fill=X)
@@ -428,15 +417,16 @@ class FlagsPage(Frame):
 
         userscore_canvas = Canvas(self, width=500, height=100, bg="white")
         userscore_canvas.pack()
-        id_1 = userscore_canvas.create_text(
+        score_text = userscore_canvas.create_text(
             40, 30, text=(
                 "Score", score), font=(
                 "Comic Sans", 10))
-        id_2 = userscore_canvas.create_text(300, 30, font=("Comic Sans", 10))
+        right_wrong_text = userscore_canvas.create_text(
+            450, 30, font=("Comic Sans", 10))
 
         # Options are set here
         chosen, options_text = function_options()
-        right_answer_flag = get_right_answer_flag(chosen, options_text)
+        get_right_answer_flag(chosen, options_text)
 
         button_one = Button(
             top_frame,
@@ -447,8 +437,8 @@ class FlagsPage(Frame):
                 target=print_result,
                 args=(
                     1,
-                    id_2,
-                    id_1,
+                    right_wrong_text,
+                    score_text,
                     controller)).start())
         button_two = Button(
             top_frame,
@@ -459,8 +449,8 @@ class FlagsPage(Frame):
                 target=print_result,
                 args=(
                     2,
-                    id_2,
-                    id_1,
+                    right_wrong_text,
+                    score_text,
                     controller)).start())
         button_three = Button(
             bottom_frame,
@@ -471,8 +461,8 @@ class FlagsPage(Frame):
                 target=print_result,
                 args=(
                     3,
-                    id_2,
-                    id_1,
+                    right_wrong_text,
+                    score_text,
                     controller)).start())
         button_four = Button(
             bottom_frame,
@@ -483,8 +473,8 @@ class FlagsPage(Frame):
                 target=print_result,
                 args=(
                     4,
-                    id_2,
-                    id_1,
+                    right_wrong_text,
+                    score_text,
                     controller)).start())
         button_one.pack(side=LEFT, padx=5, pady=5)
         button_two.pack(side=RIGHT, padx=5, pady=5)
@@ -507,20 +497,20 @@ class FlagsPage(Frame):
 
         button_five.pack(side=RIGHT, padx=5, pady=5)
 
-        menubar = Menu(self)
+        menu_bar = Menu(self)
 
         # File
-        filemenu = Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Start", command=lambda: restart_program())
-        filemenu.add_command(label="Exit", command=lambda: app.exit())
-        menubar.add_cascade(label="File", menu=filemenu)
+        file_menu = Menu(menu_bar, tearoff=0)
+        file_menu.add_command(label="Start", command=lambda: restart_program())
+        file_menu.add_command(label="Exit", command=lambda: app.exit())
+        menu_bar.add_cascade(label="File", menu=file_menu)
 
         # Help
-        helper = Menu(menubar, tearoff=0)
+        helper = Menu(menu_bar, tearoff=0)
         helper.add_command(label="About", command=lambda: about())
-        menubar.add_cascade(label="Help", menu=helper)
+        menu_bar.add_cascade(label="Help", menu=helper)
 
-        controller.configure(menu=menubar)
+        controller.configure(menu=menu_bar)
 
 
 class StartPage(Frame):
@@ -530,12 +520,12 @@ class StartPage(Frame):
     and click on play buttong to start the game.
 
     Attributes:
-        parent: Frame object
+        parent: Frame object to organize the layout
         controller: GameWrapper object
     """
 
     def __init__(self, parent, controller):
-        """Inits StartPage with parent and controller."""
+        """Inits StartPage Class"""
         Frame.__init__(self, parent)
 
         self.configure(bg="white")
@@ -570,18 +560,18 @@ class PlayAgainExit(Frame):
     and exit button which when clicked destroys the window and ends the game.
 
     Attributes:
-        parent: Frame object
+        parent: Frame object to organize the layout
         controller: GameWrapper object
     """
 
     def __init__(self, parent, controller):
-        """Inits PlayAgainExit with parent."""
+        """Inits PlayAgainExit Class"""
         Frame.__init__(self, parent)
         self.configure(bg="white")
         score_canvas = Canvas(self, width=500, height=700, bg="white")
 
         score_canvas.create_text(
-            300,
+            250,
             50,
             text="End of the game",
             fill="black",
