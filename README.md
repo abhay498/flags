@@ -34,3 +34,11 @@ Your code has been rated at 9.28/10 (previous run: 9.28/10, +0.00)
 C:\Users\Ankur\Desktop\flags-master>
 
 #####################################################
+References:
+https://en.wikipedia.org
+https://python.hotexamples.com/examples/tkinter/Canvas/create_text/python-canvas-create_text-method-examples.html
+https://likegeeks.com/python-gui-examples-tkinter-tutorial/
+https://watermarkly.com/photo-resizer/
+https://pypi.org/project/autopep8/#installation
+https://stackhowto.com/how-to-disable-enable-tkinter-button-in-python/
+#####################################################
