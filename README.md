@@ -8,6 +8,7 @@ This repository belongs to flags game.
 Used:
 C:\Users\Ankur\Desktop\flags-master>autopep8 --in-place --aggressive --aggressive flags.py
 #####################################################
+
 Current pylint score with unnecessary suppressed warnings
 
 C:\Users\Ankur\Desktop\flags-master>pylint --disable=C0103,W0108  flags.py
